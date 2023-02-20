@@ -1,62 +1,57 @@
-import React from "react";
-import styled from "styled-components";
+import { useState } from 'react';
+import styled from 'styled-components';
 import Statistics from './Statistics/Statistics';
 import FeedbackOption from './FeedbackOption/FeedbackOption';
-import Notification from "./Notification/Notification";
-import Section from "./Section/Section";
+import Notification from './Notification/Notification';
+import Section from './Section/Section';
 
-export class App extends React.Component {
-  state = {
-  good: 0,
-  neutral: 0,
-  bad: 0,
-  }
+function App() {
+  const [feedback, setFeedback] = useState({
+    good: 0,
+    neutral: 0,
+    bad: 0,
+  });
 
-
-  handleIncrement = (state) => {
-    this.setState(prevState => ({
-      [state]: prevState[state] + 1,
+  const handleIncrement = feedback => {
+    setFeedback(prevFeedback => ({
+      ...prevFeedback,
+      [feedback]: prevFeedback[feedback] + 1,
     }));
-  }
+  };
 
-  handleTotal() { 
-    const { good, neutral, bad } = this.state;
+  const handleTotal = () => {
+    const { good, neutral, bad } = feedback;
     return good + neutral + bad;
-  }
+  };
 
-  handlePositivePercentage() {
-    const { good } = this.state;
-    return Math.round((good / this.handleTotal()) * 100);
+  const handlePositivePercentage = () => {
+    return Math.round((feedback.good / handleTotal()) * 100);
+  };
 
-  }
-
-  
-  render() {
-    const options = Object.keys(this.state);
-    return (
-      <Container>
-        <Section title="Please leave feedback">
-          <FeedbackOption onLeaveFeedback={this.handleIncrement} options={ options} />
-        </Section>
-        <Section title="Statistics">
-          {this.handleTotal() > 0 ? (
+  const options = Object.keys(feedback);
+  return (
+    <Container>
+      <Section title="Please leave feedback">
+        <FeedbackOption onLeaveFeedback={handleIncrement} options={options} />
+      </Section>
+      <Section title="Statistics">
+        {handleTotal() > 0 ? (
           <Statistics
-            good={this.state.good}
-            neutral={this.state.neutral}
-            bad={this.state.bad}
-            total={this.handleTotal()}
-            positivePercentage={this.handlePositivePercentage()} />
-            
-        
-          ) : (
-              <Notification message="There is no feedback" />
-          )}
-
-        </Section>
+            good={feedback.good}
+            neutral={feedback.neutral}
+            bad={feedback.bad}
+            total={handleTotal()}
+            positivePercentage={handlePositivePercentage()}
+          />
+        ) : (
+          <Notification message="There is no feedback" />
+        )}
+      </Section>
     </Container>
-  )
-  }
+  );
 }
+
+export default App;
 
 const Container = styled.section`
   display: flex;
@@ -64,8 +59,4 @@ const Container = styled.section`
   align-items: center;
   margin: 0 auto;
   padding: 0;
-`
-
-
-
-
+`;
